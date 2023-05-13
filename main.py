@@ -238,8 +238,3 @@ async def oneri(ctx, oneri: str=None, *args):
     await ctx.reply("Öneriniz gönderildi: " + oneri)
 
 bot.run("token")  # Where 'TOKEN' is your bot token
-
-
-"""
-https://discord.com/oauth2/authorize?client_id=1104147209114636398&scope=bot&permissions=8
-"""
