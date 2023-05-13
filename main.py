@@ -237,7 +237,7 @@ async def oneri(ctx, oneri: str=None, *args):
             f.write(f"{ctx.author.name} ({ctx.author.id}): {oneri}\n")
     await ctx.reply("Öneriniz gönderildi: " + oneri)
 
-bot.run("MTEwNDE0NzIwOTExNDYzNjM5OA.G-3LAP.SFVWnrLNLyfCBR0HrbJVpMkLaT66NJYAcfxsQE")  # Where 'TOKEN' is your bot token
+bot.run("token")  # Where 'TOKEN' is your bot token
 
 
 """
