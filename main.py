@@ -9,7 +9,7 @@ intents.presences = False
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
 
-owner_id = 515996930514485262
+owner_id = int("your-profile-id")
 
 @bot.event
 async def on_ready():
