@@ -1,5 +1,6 @@
 from discord import *
 from discord.ext import commands
+from essentials import *
 
 import discord
 import asyncio
@@ -11,14 +12,29 @@ intents = discord.Intents().all()
 intents.message_content = True
 intents.typing = False
 intents.presences = False
-locale.setlocale(locale.LC_TIME, "tr_TR") 
+#x = input("Do you want the terminal language to be turkish? y/n ")
+#if x.lower() == "y":
+    #locale.setlocale(locale.LC_TIME, "tr_TR")
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
 
+input(file.readlines("data"))
+
 #Local variables
 loop = False
-token = "bot-token"
-owner_id = int("your-user-id")
+if file.read("data") == None:
+    token = input("Please enter your bot's token: ")
+    try:
+        userid = int(input("Please enter the user id of the owner of this bot: "))
+    except:
+        print("Your user id has to be integer. Shutting down the program, try again later.")
+        quit()
+    
+    file.write("data", token + "\n" + str(userid))
+
+data = file.readlines("data")
+token = data[0]
+owner_id = data[1]
 colors = [0x1abc9c, 0x11806a, 0x2ecc71, 0x1f8b4c, 0x3498db, 0x206694, 0x9b59b6, 0x71368a, 0xe91e63, 0xe91e63, 0xad1457, 0xf1c40f, 0xc27c0e, 0xe67e22, 0xa84300, 0xe74c3c, 0x992d22, 0x95a5a6, 0x607d8b, 0x979c9f, 0x546e7a, 0x7289da]
 
 # -------------------------------------------------------------------------
@@ -320,4 +336,9 @@ async def quit(ctx):
     await ctx.message.delete()
     await bot.close()
 
-bot.run(token)  # Where 'TOKEN' is your bot token
+try:
+    bot.run(token)  # Where 'TOKEN' is your bot token
+except:
+    input("You have passed an invalid token. Resetting data, run the file again to rewrite your data. ")
+    file.write("data")
+    exit()
