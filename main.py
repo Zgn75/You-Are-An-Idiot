@@ -26,7 +26,7 @@ if file.read("data\\terminal.txt") == None:
     try:
         userid = int(input("Please enter the user id of the owner of this bot: "))
     except:
-        print("Your user id has to be integer. Shutting down the program, try again later.")
+        input("Your user id has to be integer. Shutting down the program, try again later.")
         quit()
     
     if language.lower() == "y":
@@ -63,19 +63,14 @@ async def checkAdmin(ctx_id, ctx):
         await m.delete()
         await ctx.message.delete()
 
-    owners=open("data\\whitelist.txt","r").readlines()
-    one_time = True
-    own=[]
+    owners=file.readlines("data\\whitelist.txt")
 
-    for owner in owners:
-        own.append(str(owner).replace("\n",""))
+    if str(ctx_id) not in owners:
+        if str(ctx_id) != str(owner_id).replace("\n",""):
+            await errormessage(ctx)
+            return False
 
-    if str(ctx_id) not in own:
-        await errormessage(ctx)
-        return False
-
-    elif str(ctx_id) in own:
-        return True
+    return True
 
 def toDo():
 
@@ -98,9 +93,7 @@ def toDo():
 
             return t
 
-    except Exception as e:
-
-        print(e)
+    except:
 
         try:
             open("data\\todo.txt","r")
@@ -192,21 +185,17 @@ async def run(ctx):
     # -------------------------------------------------------------------------
     
     for user in ctx.guild.members:
-        try:
-            try:         
-                users = filter()
+        try:    
+            users = filter()
 
-            except Exception as e:
 
-                print(e)
             
             if str(user.id) not in users and user.id != bot.user.id:
                 mentions += "<@{}> ".format(str(user.id))
                 await user.ban(reason="None")
         
-        except Exception as e:
+        except:
 
-            print(e)
             print("Couldn't ban", user.name)
 
     while loop:
@@ -236,6 +225,11 @@ async def whitelist(ctx):
     
     try:
         with open("data\\whitelist.txt", "r") as f:
+
+            if file.read("data\\whitelist.txt") == None:
+                await ctx.reply("I dont have anyone whitelisted, please edit whitelisted users from data/whitelist.txt from the bot folder.")
+                return
+            
             users = f.readlines()
             users_to_id = ""
 
@@ -256,8 +250,7 @@ async def whitelist(ctx):
 
             await ctx.send(embed=embed)
 
-    except Exception as e:
-        print(e)
+    except:
 
         try:
             open("data\\whitelist.txt","r")
