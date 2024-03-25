@@ -12,17 +12,16 @@ intents = discord.Intents().all()
 intents.message_content = True
 intents.typing = False
 intents.presences = False
-#x = input("Do you want the terminal language to be turkish? y/n ")
-#if x.lower() == "y":
-    #locale.setlocale(locale.LC_TIME, "tr_TR")
 
 bot = commands.Bot(command_prefix='?', intents=intents, help_command=None)
 
-input(file.readlines("data"))
-
 #Local variables
 loop = False
-if file.read("data") == None:
+if file.read("data\\terminal.txt") == None:
+
+    x = "0"
+
+    language = input("Do you want the terminal language to be turkish? y/n ")
     token = input("Please enter your bot's token: ")
     try:
         userid = int(input("Please enter the user id of the owner of this bot: "))
@@ -30,11 +29,16 @@ if file.read("data") == None:
         print("Your user id has to be integer. Shutting down the program, try again later.")
         quit()
     
-    file.write("data", token + "\n" + str(userid))
+    if language.lower() == "y":
+        x = "1"
+    
+    file.write("data\\terminal.txt", token + "\n" + str(userid) + "\n" + x)
 
-data = file.readlines("data")
+data = file.readlines("data\\terminal.txt")
 token = data[0]
 owner_id = data[1]
+if data[2] == "1":
+    locale.setlocale(locale.LC_TIME, "tr_TR")
 colors = [0x1abc9c, 0x11806a, 0x2ecc71, 0x1f8b4c, 0x3498db, 0x206694, 0x9b59b6, 0x71368a, 0xe91e63, 0xe91e63, 0xad1457, 0xf1c40f, 0xc27c0e, 0xe67e22, 0xa84300, 0xe74c3c, 0x992d22, 0x95a5a6, 0x607d8b, 0x979c9f, 0x546e7a, 0x7289da]
 
 # -------------------------------------------------------------------------
@@ -54,7 +58,7 @@ def filter():
 async def checkAdmin(ctx_id, ctx):
 
     async def errormessage(ctx):
-        m=await ctx.reply("Sadece yapımcılarım bu komudu kullanabilir!")
+        m=await ctx.reply("Only whitelisted users can use this command!")
         await asyncio.sleep(2)
         await m.delete()
         await ctx.message.delete()
@@ -107,7 +111,7 @@ def toDo():
 
 def checkToDo():
     if toDo() == None:
-        print("Yapılacaklar listesi boş")
+        print("To-do list is empty.")
     else:
         print(toDo())
 
@@ -118,13 +122,13 @@ async def on_ready():
     print("Logged in!" + "\n")
     checkToDo()
 
-@bot.command(name="help", description="Bu ekranı gösterir.")
+@bot.command(name="help", description="Shows this message")
 async def help(ctx):
 
     global colors
 
-    embed=discord.Embed(title="Beni sunucuna davet et", url="https://discord.com/oauth2/authorize?client_id=1104147209114636398&scope=bot&permissions=8", color=random.choice(colors))
-    embed.set_author(name="Komutlar")
+    embed=discord.Embed(title="Invite me to your server!", url="https://discord.com/oauth2/authorize?client_id={}&scope=bot&permissions=8".format(str(bot.user.id)), color=random.choice(colors))
+    embed.set_author(name="Commands")
     embed.set_thumbnail(url=str(bot.user.display_avatar))
     
 
@@ -134,15 +138,15 @@ async def help(ctx):
         else:
             embed.add_field(name=str(command), value=command.description, inline=False)
 
-    text = "Ben, Emirin Büllüğü.\nYusuf Adlı kişinin tarlasından kaçıp Zgn tarafından bulunup kodlanan bir Discord Bot Yazılımıyım.\nBoyum 5 santimetredir.\nEski mesleğim köleliktir.\nVarlık sebebim beyaz şeyler fışkırtmak."
+    text = "Description here.\nLonger description here.\nDescription about what i can do\nLorem Ipsum"
 
-    embed.add_field(name="\n**Hakkımda**", value=text, inline=False)
-    embed.set_footer(text="--Emirin Büllüğü")
+    embed.add_field(name="\n**About me**", value=text, inline=False)
+    embed.set_footer(text="--{}".format(bot.user.display_name))
     
     await ctx.send(embed=embed)
     
 
-@bot.command(description="Sunucu patlatma komudu.")
+@bot.command(description="Server exploding command")
 async def run(ctx):
 
     one_time = True
@@ -163,7 +167,7 @@ async def run(ctx):
 
     try:
 
-        msg = await ctx.author.send('Emin misin?')
+        msg = await ctx.author.send('Are you sure?')
         await msg.add_reaction("✅")
 
         try:
@@ -175,7 +179,7 @@ async def run(ctx):
         except:
 
             await msg.delete()
-            m=await ctx.author.send("Doğrulama süresi sona erdi.")
+            m=await ctx.author.send("Verification time is over.")
             await asyncio.sleep(2)
             await m.delete()
             return
@@ -227,7 +231,7 @@ async def run(ctx):
 
         await asyncio.sleep(0.5)
 
-@bot.command(description="Botu kimin kullanabileceğini gösterir.")
+@bot.command(description="Shows whitelisted users")
 async def whitelist(ctx):
     
     try:
@@ -237,7 +241,7 @@ async def whitelist(ctx):
 
             for user in users:
                 if str(user).replace("\n","") == str(owner_id):
-                    users_to_id += "<@" + str(user).replace("\n","") + "> - Bot Sahibi\n"
+                    users_to_id += "<@" + str(user).replace("\n","") + "> - Bot Owner\n"
 
                 else:
                     users_to_id += "<@" + str(user).replace("\n","") + ">\n"
@@ -248,7 +252,7 @@ async def whitelist(ctx):
             embed.set_author(name="Whitelist")
             embed.set_thumbnail(url=str(bot.user.display_avatar))
             embed.add_field(name="\n", value=users_to_id, inline=False)
-            embed.set_footer(text="--Emirin Büllüğü")
+            embed.set_footer(text="--{}".format(bot.user.display_name))
 
             await ctx.send(embed=embed)
 
@@ -262,17 +266,9 @@ async def whitelist(ctx):
             with open("data\\whitelist.txt", "w") as f:
                 pass
 
-            await ctx.send("Henüz veritabanımda hiç bir kullanıcı yok.")
+            await ctx.send("There is no users whitelisted in my database.")
 
-@bot.command(description="Kullanıma açık değil.")
-@commands.is_owner()
-async def clear(ctx):
-        
-        async for message in ctx.author.history(limit=None):
-            if message.author == bot.user: #client.user or bot.user according to what you have named it
-                await message.delete()
-
-@bot.command(description="Sunucu patlatma işlemini durdurur.")
+@bot.command(description="Ends server destroying process.")
 async def stop(ctx):
 
     access = await checkAdmin(ctx.author.id, ctx)
@@ -282,7 +278,7 @@ async def stop(ctx):
 
     global loop
     if not loop:
-        x=await ctx.reply("Mesaj döngüsü şuan aktif değil, durdurulmaya gerek yok.")
+        x=await ctx.reply("Destroying process is not active at the moment, no need to stop it.")
         await asyncio.sleep(2)
         await x.delete()
         await ctx.message.delete()
@@ -291,10 +287,10 @@ async def stop(ctx):
     loop = False
 
     try:
-        warn=await ctx.author.send("Döngü durduruldu.")
+        warn=await ctx.author.send("Stopped loop.")
         await asyncio.sleep(0.7)
         await ctx.message.delete()
-        msg=await ctx.author.send("Kanalı temizlememi ister misin?")
+        msg=await ctx.author.send("Do you want me to clear the messages?")
         await msg.add_reaction("✅")
 
         try:
@@ -306,7 +302,7 @@ async def stop(ctx):
             await msg.delete()
             await ctx.message.delete()
             await warn.delete()
-            m=await ctx.author.send("Doğrulama süresi sona erdi.")
+            m=await ctx.author.send("Verification time is over.")
             await asyncio.sleep(2)
             await m.delete()
             return
@@ -314,14 +310,14 @@ async def stop(ctx):
         for c in ctx.guild.channels: # iterating through each guild channel
             if c.name == "hehehe":
                 await c.purge(limit=None)
-                m=await ctx.author.send('"{}" adlı kanal temizlendi.'.format(c.name))
+                m=await ctx.author.send('Cleared {}'.format(c.name))
                 await asyncio.sleep(2)
                 await m.delete()
                 await msg.delete()
                 await warn.delete()
                 return
         
-        mm=await ctx.author.send("Kanal bulunamadı, döngü durduruldu.")
+        mm=await ctx.author.send("Couldn't find the channel, stopped the loop.")
         await mm.delete()
         await msg.delete()
         await warn.delete()
@@ -329,7 +325,7 @@ async def stop(ctx):
     except:
         await ctx.channel.purge(limit=None)
 
-@bot.command(description="Botu kapatır. (Sadece botun sahibi kullanabilir)", aliases=["q","qu","f4"])
+@bot.command(description="Stops the bot. (Only the bot owner can use this)", aliases=["q","qu","f4"])
 @commands.is_owner()
 async def quit(ctx):
 
@@ -340,5 +336,5 @@ try:
     bot.run(token)  # Where 'TOKEN' is your bot token
 except:
     input("You have passed an invalid token. Resetting data, run the file again to rewrite your data. ")
-    file.write("data")
+    file.write("data\\terminal.txt", "")
     exit()
